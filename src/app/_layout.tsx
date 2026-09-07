@@ -1,18 +1,34 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { Stack } from "expo-router";
+import { createContext, useEffect, useState } from "react";
+import { View } from "react-native";
+import "../global.css"; // NativeWind styles
+import { getSetting, initDB } from "../services/database";
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+// Export context so other screens can toggle the theme
+export const ThemeContext = createContext({
+  isDark: false,
+  toggleTheme: () => {},
+});
 
-SplashScreen.preventAutoHideAsync();
+export default function RootLayout() {
+  const [isDark, setIsDark] = useState(false);
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  useEffect(() => {
+    initDB();
+    const loadTheme = async () => {
+      const theme = await getSetting("themePref");
+      if (theme === "dark") setIsDark(true);
+    };
+    loadTheme();
+  }, []);
+
+  const toggleTheme = () => setIsDark(!isDark);
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <ThemeContext.Provider value={{ isDark, toggleTheme }}>
+      <View className={`flex-1 ${isDark ? "dark bg-gray-900" : "bg-white"}`}>
+        <Stack screenOptions={{ headerShown: false }} />
+      </View>
+    </ThemeContext.Provider>
   );
 }
