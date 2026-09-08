@@ -1,18 +1,56 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { Stack } from "expo-router";
+import { colorScheme } from "nativewind";
+import { createContext, useEffect, useState } from "react";
+import { View } from "react-native";
+import "../global.css";
+import { getSetting, initDB } from "../services/database";
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+export const ThemeContext = createContext({
+  isDark: false,
+  toggleTheme: () => {},
+});
 
-SplashScreen.preventAutoHideAsync();
+export default function RootLayout() {
+  const [isDark, setIsDark] = useState(false);
+  const [ready, setReady] = useState(false);
 
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+  useEffect(() => {
+    const bootstrap = async () => {
+      await initDB();
+      const theme = await getSetting("themePref");
+      const dark = theme === "dark";
+      setIsDark(dark);
+
+      requestAnimationFrame(() => {
+        try {
+          colorScheme.set(dark ? "dark" : "light");
+        } catch {}
+      });
+      setReady(true);
+    };
+    bootstrap();
+  }, []);
+
+  const toggleTheme = () => {
+    setIsDark((prev) => {
+      const next = !prev;
+      colorScheme.set(next ? "dark" : "light");
+      return next;
+    });
+  };
+
+  if (!ready) {
+    return <View style={{ flex: 1 }} className="flex-1 bg-white" />;
+  }
+
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <ThemeContext.Provider value={{ isDark, toggleTheme }}>
+      <View
+        style={{ flex: 1 }}
+        className={`flex-1 ${isDark ? "bg-gray-900" : "bg-white"}`}
+      >
+        <Stack screenOptions={{ headerShown: false }} />
+      </View>
+    </ThemeContext.Provider>
   );
 }
