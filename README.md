@@ -1,56 +1,23 @@
-# Welcome to your Expo app 👋
+# Personal Productivity App
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A cross-platform personal productivity application built with Expo, React Native, and NativeWind. This app allows users to manage daily tasks with priority levels, persist data locally, and customize their experience with a dark mode theme toggle.
 
-## Get started
+## ✨ Features & Tech Stack
 
-1. Install dependencies
+*   **Core Functionality:** Create, read, update, and delete tasks with visual priority color-coding (High, Medium, Low).
+*   **Data Persistence & Theme:** Uses `expo-sqlite` and `expo-secure-store` for cross-platform data saving, including a system-wide dark mode toggle.
+*   **Tech Stack:** Built using Expo, React Native, TypeScript, Expo Router, and NativeWind/Tailwind CSS.
 
-   ```bash
-   npm install
-   ```
+## 🚀 Setup Instructions
 
-2. Start the app
+1.  Clone the repository and navigate to the project directory: `cd ProductivityApp`
+2.  Install the required dependencies via terminal: `npm install`
+3.  Start the Expo development server, clearing the cache to ensure NativeWind loads correctly: `npx expo start -c`
+4.  Press `w` to open on the web, `i` for the iOS Simulator, or scan the QR code with the Expo Go app for physical devices.
 
-   ```bash
-   npx expo start
-   ```
+## 🧪 Testing Guide
 
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
-
-```bash
-npm run reset-project
-```
-
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
-
-### Other setup steps
-
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
-
-## Learn more
-
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+*   **Task Management:** Add a new task with a specific priority. Verify the task appears with the correct priority color-coding on the home screen.
+*   **Validation:** Attempt to save a task with an empty title and verify the error alert prevents submission.
+*   **Interaction & Deletion:** Mark a task as complete to verify the statistics update. Delete a task to trigger the platform-specific confirmation dialog (native alert on mobile, browser confirm on web).
+*   **Data Persistence:** Toggle dark mode in the settings, then completely refresh or restart the app to ensure your theme preference and saved tasks remain intact.
