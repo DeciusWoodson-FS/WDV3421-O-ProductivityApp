@@ -19,27 +19,26 @@ export default function TaskListScreen() {
   const [tasks, setTasks] = useState<any[]>([]);
   const [filter, setFilter] = useState<"All" | "Active" | "Completed">("All");
 
-  // Reload tasks whenever this screen comes into focus
+  const loadTasks = useCallback(async () => {
+    const data = await getTasks();
+    setTasks(data);
+  }, []);
+
   useFocusEffect(
     useCallback(() => {
       loadTasks();
-    }, []),
+    }, [loadTasks]),
   );
 
-  const loadTasks = () => {
-    const data = getTasks();
-    setTasks(data);
-  };
-
-  const handleToggle = (id: number, status: number) => {
-    toggleTaskCompletion(id, status);
-    loadTasks();
+  const handleToggle = async (id: number, status: number) => {
+    await toggleTaskCompletion(id, status);
+    await loadTasks();
   };
 
   const handleDelete = (id: number) => {
-    const confirmDelete = () => {
-      deleteTask(id);
-      loadTasks();
+    const confirmDelete = async () => {
+      await deleteTask(id);
+      await loadTasks();
     };
 
     if (Platform.OS === "web") {

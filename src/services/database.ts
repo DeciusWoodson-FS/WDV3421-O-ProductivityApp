@@ -2,12 +2,19 @@ import * as SecureStore from "expo-secure-store";
 import * as SQLite from "expo-sqlite";
 import { Platform } from "react-native";
 
-// 1. SQLite Database Setup
-const db = SQLite.openDatabaseSync("productivity.db");
+let dbPromise: Promise<SQLite.SQLiteDatabase> | null = null;
 
-export const initDB = () => {
+function getDB(): Promise<SQLite.SQLiteDatabase> {
+  if (!dbPromise) {
+    dbPromise = SQLite.openDatabaseAsync("productivity.db");
+  }
+  return dbPromise;
+}
+
+export const initDB = async () => {
   try {
-    db.execSync(`
+    const db = await getDB();
+    await db.execAsync(`
       CREATE TABLE IF NOT EXISTS tasks (
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         title TEXT NOT NULL,
@@ -21,31 +28,42 @@ export const initDB = () => {
   }
 };
 
-export const getTasks = () => {
-  return db.getAllSync("SELECT * FROM tasks ORDER BY isCompleted ASC, id DESC");
+export const getTasks = async () => {
+  const db = await getDB();
+  return db.getAllAsync(
+    "SELECT * FROM tasks ORDER BY isCompleted ASC, id DESC",
+  );
 };
 
-export const addTask = (
+export const addTask = async (
   title: string,
   description: string,
   priority: string,
 ) => {
-  db.runSync(
+  const db = await getDB();
+  await db.runAsync(
     "INSERT INTO tasks (title, description, priority) VALUES (?, ?, ?)",
     [title, description, priority],
   );
 };
 
-export const toggleTaskCompletion = (id: number, currentStatus: number) => {
+export const toggleTaskCompletion = async (
+  id: number,
+  currentStatus: number,
+) => {
+  const db = await getDB();
   const newStatus = currentStatus === 1 ? 0 : 1;
-  db.runSync("UPDATE tasks SET isCompleted = ? WHERE id = ?", [newStatus, id]);
+  await db.runAsync("UPDATE tasks SET isCompleted = ? WHERE id = ?", [
+    newStatus,
+    id,
+  ]);
 };
 
-export const deleteTask = (id: number) => {
-  db.runSync("DELETE FROM tasks WHERE id = ?", [id]);
+export const deleteTask = async (id: number) => {
+  const db = await getDB();
+  await db.runAsync("DELETE FROM tasks WHERE id = ?", [id]);
 };
 
-// 2. Cross-Platform Secure Storage
 export const saveSetting = async (key: string, value: string) => {
   if (Platform.OS === "web") {
     localStorage.setItem(key, value);
